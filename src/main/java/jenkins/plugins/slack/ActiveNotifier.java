@@ -256,7 +256,7 @@ public class ActiveNotifier implements FineGrainedNotifier {
     String getBuildStatusMessage(AbstractBuild r, boolean includeTestSummary, boolean includeFailedTests, boolean includeCustomMessage) {
         MessageBuilder message = new MessageBuilder(notifier, r);
         message.appendStatusMessage();
-        message.appendDuration();
+        message.appendDuration(r.getProject().isConcurrentBuild());
         message.appendOpenLink();
         if (includeTestSummary) {
             message.appendTestSummary();
@@ -389,10 +389,10 @@ public class ActiveNotifier implements FineGrainedNotifier {
             return this;
         }
 
-        public MessageBuilder appendDuration() {
+        public MessageBuilder appendDuration(boolean isConcurrentBuild) {
             message.append(" after ");
             String durationString;
-            if(message.toString().contains(BACK_TO_NORMAL_STATUS_MESSAGE)){
+            if(!isConcurrentBuild && message.toString().contains(BACK_TO_NORMAL_STATUS_MESSAGE)){
                 durationString = createBackToNormalDurationString();
             } else {
                 durationString = build.getDurationString();
